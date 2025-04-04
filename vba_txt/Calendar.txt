@@ -1,0 +1,134 @@
+Option Base 1
+Option Explicit
+
+Private Const uiSize As Integer = 25
+Private monthDays() As Date
+Private viewDate As Date
+
+Dim Events() As New ButtonEvents
+Event clickEvent(ByVal thisDate As Date)
+
+
+Private Sub Class_Initialize()
+    UpdateCalendar (Date)
+End Sub
+
+
+Function IncreaseViewDate()
+    '# - adds one month to the view Date and updates calendar
+    viewDate = DateAdd("m", 1, viewDate)
+    UpdateCalendar (viewDate)
+End Function
+
+Function DecreaseViewDate()
+    '# - subtracts one month to the view date and updates calendar
+    viewDate = DateAdd("m", -1, viewDate)
+    UpdateCalendar (viewDate)
+End Function
+
+Private Function UpdateCalendar(ByVal dateValue As Date)
+    viewDate = dateValue
+    
+    Call ClearCalendar
+    Call GetCalendar(viewDate)
+    Call GenerateCalendar
+    Call SetDisplay
+    
+End Function
+
+'# - gets all days in the month and pushes to monthDays array
+Private Function GetCalendar(ByVal dateValue As Date)
+    
+    '# - clear and resize array to 1
+    ReDim monthDays(1)
+    
+    '# - set to first day of the given month
+    Dim startDate As Date
+        startDate = DateAdd("d", -day(dateValue) + 1, dateValue)
+        
+    viewDate = startDate
+    
+    '# - set date increment to first of month
+    Dim newDate As Date
+        newDate = startDate
+    
+    '# - counter used to redim array
+    Dim i As Integer
+        i = 1
+    
+    '# while we are still in the same month
+    Do While Month(newDate) = Month(startDate)
+        ReDim Preserve monthDays(i)         '# - extend the array size
+        monthDays(i) = newDate              '# - add the new date
+        newDate = DateAdd("d", 1, newDate)  '# - increment date
+        i = i + 1                           '# - increment counter
+    Loop
+    
+End Function
+
+
+Private Function GenerateCalendar()
+
+    Dim btn As MSForms.CommandButton
+
+    
+    Dim dayOfWeek As Integer
+    Dim weekOfMonth As Integer
+        weekOfMonth = 1
+    
+    Dim i As Integer
+    Dim j As Integer
+    
+    ReDim Events(0 To 1)
+    
+    For i = LBound(monthDays) To UBound(monthDays)
+
+        dayOfWeek = weekDay(monthDays(i))
+        
+        '# - create the day button
+        Set btn = form_calendar _
+            .fm_days _
+            .Controls _
+            .Add("Forms.CommandButton.1", "btn-" & monthDays(i), True)
+
+        '# - style the day button
+        With btn
+            .Caption = i
+            .Width = uiSize
+            .Height = uiSize
+            .left = dayOfWeek * uiSize - uiSize
+            .top = weekOfMonth * uiSize - uiSize
+            '.TextAlign = fmTextAlignCenter
+        End With
+        
+        ReDim Preserve Events(0 To i)
+        Set Events(i).SelectDate = btn
+
+        
+        If dayOfWeek = 7 Then weekOfMonth = weekOfMonth + 1
+    Next i
+End Function
+
+
+Private Function ClearCalendar()
+    Dim element As Control
+    For Each element In form_calendar.fm_days.Controls
+        form_calendar.fm_days.Controls.Remove element.Name
+    Next element
+End Function
+
+
+Private Function SetDisplay()
+    '# - sets the display month and year
+    form_calendar.btn_month_display.Caption = _
+    MonthName(Month(viewDate)) & " " & _
+    Year(viewDate)
+End Function
+
+
+Function PrintSelectedDate(ByVal dayValue As Integer)
+    Dim selectedDay As Date
+        selectedDay = DateAdd("d", dayValue - 1, viewDate)
+    ThisWorkbook.Worksheets("Home").Range("B6").Value = "Date Picked: " & selectedDay
+    
+End Function

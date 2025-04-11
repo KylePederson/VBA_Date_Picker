@@ -1,7 +1,0 @@
-Option Explicit
-
-Public WithEvents SelectDate As MSForms.CommandButton
-
-Sub SelectDate_Click()
-    Call form_calendar.DatePicker.PrintSelectedDate(SelectDate.Caption)
-End Sub

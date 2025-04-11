@@ -1,3 +1,0 @@
-Sub ShowCalendar()
-    form_calendar.Show vbModeless
-End Sub

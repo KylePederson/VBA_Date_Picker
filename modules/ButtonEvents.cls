@@ -11,10 +11,20 @@ Option Explicit
 
 Public WithEvents SelectDate As MSForms.CommandButton
 Attribute SelectDate.VB_VarHelpID = -1
+Public WithEvents SelectMonth As MSForms.CommandButton
+Attribute SelectMonth.VB_VarHelpID = -1
+Public WithEvents SelectYear As MSForms.CommandButton
+Attribute SelectYear.VB_VarHelpID = -1
 
 Sub SelectDate_Click()
     Call form_calendar.DatePicker.PrintSelectedDate(SelectDate.Caption)
 End Sub
 
+Sub SelectMonth_Click()
+    Call form_calendar.DatePicker.ChangeMonthFromSelection(SelectMonth.Caption)
+End Sub
 
+Sub SelectYear_Click()
+    Call form_calendar.DatePicker.ChangeYearFromSelection(SelectYear.Caption)
+End Sub
 
